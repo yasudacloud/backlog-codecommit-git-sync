@@ -1,0 +1,45 @@
+org: yasudacloud
+app: aws-python-flask-dynamodb-api-project
+service: aws-python-project
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: ap-northeast-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - secretsmanager:GetSecretValue
+      Resource:
+        - "*"
+
+functions:
+  webhook:
+    handler: handler.webhook
+    url: true
+    timeout: 60
+    memorySize: 128
+    environment:
+      # BacklogのGitリポジトリURL（https）
+      GIT_FROM_REPO: ""
+
+      # CodeCommitのGitリポジトリURL（https）
+      GIT_TO_REPO: ""
+
+      # Backlogのブランチ
+      GIT_FROM_BRANCH: "master"
+
+      # CodeCommitのブランチ
+      GIT_TO_BRANCH: "master"
+
+      # cloneするディレクトリ。Lambdaの場合は/tmp直下に切らないとエラーになる
+      GIT_TO_CLONE_PATH: "/tmp/git_repo"
+
+
+plugins:
+  - serverless-python-requirements
+custom:
+  pythonRequirements:
+    dockerizePip: true
